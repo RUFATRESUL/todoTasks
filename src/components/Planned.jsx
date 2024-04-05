@@ -5,7 +5,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import { Link } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useDispatch,useSelector } from 'react-redux';
-import { addTasks,setTasksFilter,clearPersist } from '../redux/registerSlice'
+import { plannedTasks,setTasksFilter,clearPersist } from '../redux/registerSlice'
+import LogoutIcon from '@mui/icons-material/Logout';
 
 
 
@@ -18,7 +19,7 @@ function Planned() {
     console.log(selector);
 
     useEffect(() => {
-        const savedData = localStorage.getItem('savedTasks');
+        const savedData = localStorage.getItem('plannedTasks');
         if (savedData) {
             setTextList(JSON.parse(savedData));
         }
@@ -26,7 +27,7 @@ function Planned() {
 
   
     useEffect(() => {
-        localStorage.setItem('savedTasks', JSON.stringify(textList));
+        localStorage.setItem('plannedTasks', JSON.stringify(textList));
     }, [textList]);
     const handleChange = (event) =>{
       setText(event.target.value)
@@ -35,7 +36,12 @@ function Planned() {
        event.preventDefault()
        setTextList([...textList,text])
        setText('')
-       dispatch(addTasks(textList));
+       dispatch(plannedTasks(textList));
+    }
+    const handleDelete = (deletePlanned)=>{
+        const updatedTasks = textList.filter(todo => todo !== deletePlanned)
+        setTextList(updatedTasks)
+        localStorage.setItem('plannedTasks',JSON.stringify(updatedTasks))
     }
   return (
     <>
@@ -51,10 +57,13 @@ function Planned() {
     <Grid container spacing={2}>
         <Grid item lg={4}>
             <Box sx={{border:'1px solid black',borderRadius:'16px',height:'700px',position:'relative',backgroundColor:'#ffffff54'}}>
-                <Box sx={{display:'flex', justifyContent:'flex-start',alignItems:'center'}}>
+                <Box sx={{display:'flex', justifyContent:'space-around',alignItems:'center'}}>
                 
                     <Stack><AccountCircleIcon sx={{fontSize:'70px',color:'grey'}}/></Stack>
-                    <h1 className='font-display text-2xl font-bold'>Rufat Rasulov</h1>
+                    <h1 className='font-display text-2xl font-bold'>Rashad Musayev</h1>
+                    <Link to="/register">
+                    <Stack sx={{width:'97%',height:'40px',borderRadius:'10px',padding:'9px',backgroundColor:'white',}}><LogoutIcon /></Stack>
+                    </Link>
                 </Box>
                 <Box sx={{display:'flex',justifyContent:'center',alignItems:'center',flexDirection:'column',padding:'30px'}}>
                     <div className='mb-2 w-[100%] h-10 rounded-lg p-2 bg-[#FFFFFF]' > Search <SearchIcon sx={{marginLeft:'285px',color:'grey'}}/></div>
@@ -85,7 +94,7 @@ function Planned() {
 
                             <p key={index}>{todo}</p>
                             </div>
-                            <div className='w-[10%] h-10 rounded-lg p-2 bg-red-500 text-white ml-2 text-center'>
+                            <div className='w-[10%] h-10 rounded-lg p-2 bg-red-500 text-white ml-2 text-center' onClick={()=>handleDelete(todo)}>
                                 <DeleteIcon/>
                             </div>
                         </div>

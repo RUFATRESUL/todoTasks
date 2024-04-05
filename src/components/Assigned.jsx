@@ -5,7 +5,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import { Link } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useDispatch,useSelector } from 'react-redux';
-import { addTasks,setTasksFilter,clearPersist } from '../redux/registerSlice';
+import { assignedTasks,setTasksFilter,clearPersist } from '../redux/registerSlice';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 function Assigned() {
     const [text, setText] = useState('')
@@ -15,7 +16,7 @@ function Assigned() {
     console.log(selector);
 
     useEffect(() => {
-        const savedData = localStorage.getItem('savedTasks');
+        const savedData = localStorage.getItem('assignedTasks');
         if (savedData) {
             setTextList(JSON.parse(savedData));
         }
@@ -23,7 +24,7 @@ function Assigned() {
 
   
     useEffect(() => {
-        localStorage.setItem('savedTasks', JSON.stringify(textList));
+        localStorage.setItem('assignedTasks', JSON.stringify(textList));
     }, [textList]);
     const handleChange = (event) =>{
       setText(event.target.value)
@@ -32,7 +33,12 @@ function Assigned() {
        event.preventDefault()
        setTextList([...textList,text])
        setText('')
-       dispatch(addTasks(textList));
+       dispatch(assignedTasks(textList));
+    }
+    const handleDelete = (deleteAssigned)=>{
+        const updatedTasks = textList.filter(todo => todo !== deleteAssigned)
+        setTextList(updatedTasks)
+        localStorage.setItem('assignedTasks',JSON.stringify(updatedTasks))
     }
   return (
     <>
@@ -48,10 +54,13 @@ function Assigned() {
     <Grid container spacing={2}>
         <Grid item lg={4}>
             <Box sx={{border:'1px solid black',borderRadius:'16px',height:'700px',position:'relative',backgroundColor:'#ffffff54', overflowY:textList.length > 12 ? 'scroll' : 'vsible'}}>
-                <Box sx={{display:'flex', justifyContent:'flex-start',alignItems:'center'}}>
+                <Box sx={{display:'flex', justifyContent:'space-around',alignItems:'center'}}>
                 
                     <Stack><AccountCircleIcon sx={{fontSize:'70px',color:'grey'}}/></Stack>
-                    <h1 className='font-display text-2xl font-bold'>Rufat Rasulov</h1>
+                    <h1 className='font-display text-2xl font-bold'>Rashad Musayev</h1>
+                    <Link to="/register">
+                    <Stack sx={{width:'97%',height:'40px',borderRadius:'10px',padding:'9px',backgroundColor:'white',}}><LogoutIcon /></Stack>
+                    </Link>
                 </Box>
                 <Box sx={{display:'flex',justifyContent:'center',alignItems:'center',flexDirection:'column',padding:'30px'}}>
                     <div className='mb-2 w-[100%] h-10 rounded-lg p-2 bg-[#FFFFFF]' > Search <SearchIcon sx={{marginLeft:'285px',color:'grey'}}/></div>
@@ -82,7 +91,7 @@ function Assigned() {
 
                             <p key={index}>{todo}</p>
                             </div>
-                            <div className='w-[10%] h-10 rounded-lg p-2 bg-red-500 text-white ml-2 text-center'>
+                            <div className='w-[10%] h-10 rounded-lg p-2 bg-red-500 text-white ml-2 text-center' onClick={()=>handleDelete(todo)}>
                                 <DeleteIcon/>
                             </div>
                         </div>

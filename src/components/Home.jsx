@@ -5,25 +5,27 @@ import SearchIcon from '@mui/icons-material/Search';
 import { Link } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useDispatch,useSelector } from 'react-redux';
-import { addTasks,setTasksFilter,clearPersist } from '../redux/registerSlice'
+import { addTasks,setTasksFilter,addUsers,removeHomeTask} from '../redux/registerSlice'
+import LogoutIcon from '@mui/icons-material/Logout';
 
 function Home() {
     const [text, setText] = useState('')
     const [textList, setTextList] = useState([])
     const dispatch = useDispatch();
-    const {selector} = useSelector(state =>state.register)
-    console.log(selector);
+    const {tasks} = useSelector(state =>state.register)
+    console.log(tasks);
 
     useEffect(() => {
         const savedData = localStorage.getItem('savedTasks');
         if (savedData) {
             setTextList(JSON.parse(savedData));
+           
         }
     }, []);
-
   
     useEffect(() => {
         localStorage.setItem('savedTasks', JSON.stringify(textList));
+        
     }, [textList]);
 
     const handleChange = (event) =>{
@@ -35,6 +37,11 @@ function Home() {
        setTextList([...textList,text])
        setText('')
         dispatch(addTasks(textList));
+    }
+    const handleDelete = (textToDelete)=>{
+        const updatedTasks = textList.filter(todo =>todo !== textToDelete);
+        setTextList(updatedTasks)
+        localStorage.setItem('savedTasks',JSON.stringify(updatedTasks))
     }
    
   return (
@@ -51,11 +58,14 @@ function Home() {
     <Grid container spacing={2}>
         <Grid item lg={4}>
             <Box sx={{border:'1px solid black',borderRadius:'16px',height:'700px',position:'relative',backgroundColor:'#ffffff54'}}>
-                <Box sx={{display:'flex', justifyContent:'flex-start',alignItems:'center'}}>
+            <Box sx={{display:'flex', justifyContent:'space-around',alignItems:'center'}}>
                 
-                    <Stack><AccountCircleIcon sx={{fontSize:'70px',color:'grey'}}/></Stack>
-                    <h1 className='font-display text-2xl font-bold'>Rufat Rasulov</h1>
-                </Box>
+                <Stack><AccountCircleIcon sx={{fontSize:'70px',color:'grey'}}/></Stack>
+                <h1 className='font-display text-2xl font-bold'>Rashad Musayev</h1>
+                <Link to="/register">
+                <Stack sx={{width:'97%',height:'40px',borderRadius:'10px',padding:'9px',backgroundColor:'white',}}><LogoutIcon /></Stack>
+                </Link>
+            </Box>
                 <Box sx={{display:'flex',justifyContent:'center',alignItems:'center',flexDirection:'column',padding:'30px'}}>
                     <input type='text' className='mb-2 w-[100%] h-10 rounded-lg p-2 bg-[#FFFFFF] relative' placeholder='Search' /> <SearchIcon sx={{marginLeft:'285px',color:'grey',position:'absolute',top:110,right:60}}/>
                     
@@ -86,9 +96,9 @@ function Home() {
 
                             <p key={index}>{todo}</p>
                             </div>
-                            <div className='w-[10%] h-10 rounded-lg p-2 bg-red-500 text-white ml-2 text-center'>
+                            <button className='w-[10%] h-10 rounded-lg p-2 bg-red-500 text-white ml-2 text-center' onClick={()=>handleDelete(todo)}>
                                 <DeleteIcon/>
-                            </div>
+                            </button>
                         </div>
                     ))}
             </Box>

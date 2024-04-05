@@ -1,4 +1,5 @@
 import userReducer from '../redux/registerSlice'
+// import importReducer from '../redux/importantSlice'
 
 import {
     persistStore,
@@ -12,7 +13,8 @@ import {
   import { configureStore } from '@reduxjs/toolkit'
 
 export const rooReducer ={
-    register:userReducer
+    register:userReducer,
+    // import:importReducer
 }
 
 export const store = configureStore({

@@ -4,7 +4,10 @@ import storage from "redux-persist/lib/storage";
 
 const initialState ={
     data:[],
-    tasks:[]
+    tasks:[],
+    important:[],
+    planned:[],
+    assigned:[]
 }
 
 export const registerSlice = createSlice({
@@ -24,6 +27,7 @@ export const registerSlice = createSlice({
             }
         },
         addTasks(state,action){
+            console.log(action.payload);
             const {id} = action.payload;
             const usersIndex = state.tasks.findIndex(user => user.id === id)
             if(usersIndex !== -1){
@@ -32,8 +36,42 @@ export const registerSlice = createSlice({
                 state.tasks.push(action.payload)
             }
         },
+        importantTasks(state,action){
+            const {id} = action.payload;
+            const usersIndex = state.important.findIndex(user => user.id === id)
+            if(usersIndex !== -1){
+                state.important[usersIndex] = {...action.payload}
+            }else{
+                state.important.push(action.payload)
+            }
+        },
+        plannedTasks(state,action){
+            const {id} = action.payload;
+            const usersIndex = state.planned.findIndex(user => user.id === id)
+            if(usersIndex !== -1){
+                state.planned[usersIndex] = {...action.payload}
+            }else{
+                state.planned.push(action.payload)
+            }
+        },
+        assignedTasks(state,action){
+            const {id} = action.payload;
+            const usersIndex = state.assigned.findIndex(user => user.id === id)
+            if(usersIndex !== -1){
+                state.assigned[usersIndex] = {...action.payload}
+            }else{
+                state.assigned.push(action.payload)
+            }
+        },
+        removeHomeTask(state,action){
+            const filteredBasket = state.tasks.filter(item => item.id !== action.payload);
+            state.tasks = filteredBasket; 
+        },
         setTasksFilter(state,action){
-            state.basket = [...state.tasks,action.payload]
+            state.tasks = [...state.tasks,action.payload]
+            state.important = [...state.important,action.payload]
+            state.planned = [...state.planned,action.payload]
+            state.assigned = [...state.assigned,action.payload]
         },
         clearPersist:()=>initialState
 
@@ -43,7 +81,7 @@ export const registerSlice = createSlice({
 const persistConfig = {
     key: "MC:Products",
     storage,
-    whitelist: ["data","tasks"]
+    whitelist: ["data","tasks","important","planned","assigned"]
 };
 
 const reducer = persistReducer(
@@ -52,5 +90,5 @@ const reducer = persistReducer(
 )
 
 export default reducer
-export const {countUsersItem,addUsers,addTasks,clearPersist,setTasksFilter} = registerSlice.actions
+export const {countUsersItem,addUsers,addTasks,clearPersist,setTasksFilter,importantTasks,plannedTasks,assignedTasks,removeHomeTask} = registerSlice.actions
 
